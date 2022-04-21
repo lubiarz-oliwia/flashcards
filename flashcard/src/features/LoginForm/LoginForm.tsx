@@ -3,8 +3,10 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { setUser, currentUser } from "./loginFormSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import {  } from "react-router-dom";
 
 const LoginPage = (props: any) => {
+
  const [isLogin, setIsLogin] = useState(true);
 
  const switchAuthModeHandler = () => {
@@ -22,6 +24,58 @@ const LoginPage = (props: any) => {
  const userek = useAppSelector(currentUser);
  const dispatch = useAppDispatch();
 
+ const submitHandler = (values:any) => {
+
+  const enteredEmail = values.email;
+  const enteredPassword = values.password;
+  let url;
+  if (isLogin) {
+   url =
+    "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBN8wSj6RkcPtrbki8goPKY8CeFwZqQzYo";
+  } else {
+   url =
+    "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBN8wSj6RkcPtrbki8goPKY8CeFwZqQzYo";
+  }
+  fetch(url, {
+   method: "POST",
+   body: JSON.stringify({
+    email: enteredEmail,
+    password: enteredPassword,
+    returnSecureToken: true,
+   }),
+   headers: {
+    "Content-Type": "application/json",
+   },
+  })
+   .then((res) => {
+    if (res.ok) {
+     return res.json();
+    } else {
+     res.json().then((data) => {
+      //show error
+      console.log(data);
+      const errorMessage = data.error.message;
+      alert(errorMessage);
+      throw new Error(errorMessage);
+     });
+    }
+   })
+   .then((data) => {
+    // const expirationTime = new Date(
+    //  new Date().getTime() + +data.expiresIn * 1000
+    // );
+    // console.log(data.expiresIn);
+    // context.login(data.idToken, expirationTime.toISOString());
+    // history.replace("/");
+
+    // setUser???????????
+    console.log('sdsdsd')
+   })
+   .catch((err) => {
+    alert(err.message);
+   });
+ };
+
  return (
   <React.Fragment>
    <div className="container">
@@ -34,7 +88,7 @@ const LoginPage = (props: any) => {
        password: "",
       }}
       onSubmit={(values) => {
-       dispatch(setUser(values.email));
+       submitHandler(values);
       }}
      >
       {({ errors, touched }) => (

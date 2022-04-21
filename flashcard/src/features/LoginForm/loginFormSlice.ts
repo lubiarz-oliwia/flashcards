@@ -4,10 +4,14 @@ import { fetchCount } from './loginFormAPI';
 
 export interface LoginFormState {
     user?: String,
+    token?: String,
+    isLoggedIn: Boolean,
 }
 
 const initialState: LoginFormState = {
-  user: ''
+  user: '',
+  token: '',
+  isLoggedIn: false
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
