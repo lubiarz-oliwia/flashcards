@@ -1,8 +1,8 @@
-.page{
+.page {
     height: 100vh;
 }
 
-.mainPage{
+.mainPage {
     display: flex;
     flex-direction: column;
     align-items: center;
