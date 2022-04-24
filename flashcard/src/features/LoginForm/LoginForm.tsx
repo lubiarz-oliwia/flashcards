@@ -3,11 +3,11 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { setUser, currentUser } from "./loginFormSlice";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import {  } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = (props: any) => {
-
  const [isLogin, setIsLogin] = useState(true);
+ const navigate = useNavigate();
 
  const switchAuthModeHandler = () => {
   setIsLogin((prevState) => !prevState);
@@ -21,11 +21,10 @@ const LoginPage = (props: any) => {
   borderRadius: "10px",
   boxShadow: "0px 0px 10px 10px rgba(0,0,0,0.15)",
  };
- const userek = useAppSelector(currentUser);
+ const user = useAppSelector(currentUser);
  const dispatch = useAppDispatch();
 
- const submitHandler = (values:any) => {
-
+ const submitHandler = (values: any) => {
   const enteredEmail = values.email;
   const enteredPassword = values.password;
   let url;
@@ -48,28 +47,31 @@ const LoginPage = (props: any) => {
    },
   })
    .then((res) => {
-    if (res.ok) {
-     return res.json();
-    } else {
-     res.json().then((data) => {
-      //show error
-      console.log(data);
-      const errorMessage = data.error.message;
-      alert(errorMessage);
-      throw new Error(errorMessage);
-     });
-    }
-   })
-   .then((data) => {
-    // const expirationTime = new Date(
-    //  new Date().getTime() + +data.expiresIn * 1000
-    // );
-    // console.log(data.expiresIn);
-    // context.login(data.idToken, expirationTime.toISOString());
-    // history.replace("/");
+    res
+     .json()
+     .then((data) => {
+      if (res.ok) {
+       // const expirationTime = new Date(
+       //  new Date().getTime() + +data.expiresIn * 1000
+       // );
+       // console.log(data.expiresIn);
+       // context.login(data.idToken, expirationTime.toISOString());
+       // history.replace("/");
 
-    // setUser???????????
-    console.log('sdsdsd')
+       // setUser???????????
+       dispatch(setUser(data));
+       navigate("/profile");
+      } else {
+       //show error
+       console.log(data);
+       const errorMessage = data.error.message;
+       alert(errorMessage);
+       throw new Error(errorMessage);
+      }
+     })
+     .catch((err) => {
+      alert(err.message);
+     });
    })
    .catch((err) => {
     alert(err.message);
@@ -79,7 +81,7 @@ const LoginPage = (props: any) => {
  return (
   <React.Fragment>
    <div className="container">
-    {userek}
+    {user}
     <div className="login-wrapper" style={loginPageStyle}>
      <h2>Login Page</h2>
      <Formik
